@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Wrestler {
+ id         Int             @id @default(autoincrement())
+ name       String
+ image      String
+ wrestler_1 WrestlerGroup[] @relation("wrestler_1")
+ wrestler_2 WrestlerGroup[] @relation("wrestler_2")
+ wrestler_3 WrestlerGroup[] @relation("wrestler_3")
+ wrestler_4 WrestlerGroup[] @relation("wrestler_4")
+}
+
+model WrestlerGroup {
+  id              Int             @id @default(autoincrement())
+  name            String
+  wrestler_1      Wrestler        @relation("wrestler_1", fields: [wrestler_1_id], references: [id])
+  wrestler_1_id   Int             @unique
+  wrestler_2      Wrestler        @relation("wrestler_2", fields: [wrestler_2_id], references: [id])
+  wrestler_2_id   Int             @unique
+  wrestler_3      Wrestler        @relation("wrestler_3", fields: [wrestler_3_id], references: [id])
+  wrestler_3_id   Int             @unique
+  wrestler_4      Wrestler        @relation("wrestler_4", fields: [wrestler_4_id], references: [id])
+  wrestler_4_id   Int             @unique
+  daily_wrestlers DailyWrestlers? @relation("daily_wrestlers")
+}
+
+model DailyWrestlers {
+  id                Int           @id @default(autoincrement())
+  starting_at       DateTime
+  ending_at         DateTime
+  daily_wrestlers   WrestlerGroup @relation("daily_wrestlers", fields: [wrestler_group_id], references: [id])
+  wrestler_group_id Int           @unique
+}
